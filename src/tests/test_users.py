@@ -99,3 +99,19 @@ def test_all_users(test_app, test_database, add_user):
     assert "john@algonquincollege.com" in data[0]["email"]
     assert "fletcher" in data[1]["username"]
     assert "fletcher@notreal.com" in data[1]["email"]
+
+
+# PUT
+def test_update_user(client):
+    user = add_user("John", "john@test.com")
+    resp = client.put(f"/users/{user.id}", json={"username": "Johnny"})
+    updated_user = User.query.get(user.id)
+    assert updated_user.username == "Johnny"
+
+
+# DELETE
+def test_delete_user(client):
+    user = add_user("John", "john@test.com")
+    resp = client.delete(f"/users/{user.id}")
+    assert resp.status_code == 204
+    assert User.query.get(user.id) is None

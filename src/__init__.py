@@ -30,3 +30,30 @@ def create_app(script_info=None):
         return {"app": app, "db": db}
 
     return app
+
+
+# PUT
+def test_update_user(test_app, test_database):
+    # create user
+    user = add_user("John", "john@test.com")
+
+    # update user
+    resp = client.put(
+        f"/users/{user.id}",
+        data=json.dumps({"username": "Johnny"}),
+        content_type="application/json",
+    )
+
+    # assert response
+    updated_user = User.query.get(user.id)
+    assert updated_user.username == "Johnny"
+
+
+# DELETE
+def test_delete_user(test_app, test_database):
+    user = add_user("John", "john@test.com")
+
+    resp = client.delete(f"/users/{user.id}")
+
+    assert resp.status_code == 204
+    assert User.query.get(user.id) is None
